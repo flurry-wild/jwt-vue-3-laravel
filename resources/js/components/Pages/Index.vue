@@ -19,8 +19,16 @@ export default {
     methods: {
         getSecretData() {
             API.get('/api/auth/index').then(res => {
-                if (res.status === 200) {
-                    this.secretData = res.data;
+                this.secretData = res.data;
+            }).catch(err => {
+                if (err.response.data.message === 'Token has expired') {
+                    API.post('api/auth/refresh').then(res => {
+                        localStorage.setItem('access_token', res.data.access_token);
+
+                        API.get('/api/auth/index').then(dataResponse => {
+                            this.secretData = dataResponse.data;
+                        })
+                    });
                 }
             })
         }

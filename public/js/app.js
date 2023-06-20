@@ -22161,6 +22161,15 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
       _api__WEBPACK_IMPORTED_MODULE_0__["default"].get('/api/auth/index').then(function (res) {
         _this.secretData = res.data;
+      })["catch"](function (err) {
+        if (err.response.data.message === 'Token has expired') {
+          _api__WEBPACK_IMPORTED_MODULE_0__["default"].post('api/auth/refresh').then(function (res) {
+            localStorage.setItem('access_token', res.data.access_token);
+            _api__WEBPACK_IMPORTED_MODULE_0__["default"].get('/api/auth/index').then(function (dataResponse) {
+              _this.secretData = dataResponse.data;
+            });
+          });
+        }
       });
     }
   }
@@ -22449,22 +22458,13 @@ __webpack_require__.r(__webpack_exports__);
 
 var api = axios__WEBPACK_IMPORTED_MODULE_0___default().create();
 api.interceptors.request.use(function (config) {
+  //console.log('send token');
+  //console.log(localStorage.getItem('access_token'));
   if (localStorage.getItem('access_token')) {
-    config.headers = {
-      'authorization': "Bearer ".concat(localStorage.getItem('access_token'))
-    };
+    config.headers.authorization = "Bearer ".concat(localStorage.getItem('access_token'));
   }
   return config;
 }, function (error) {});
-api.interceptors.response.use(function (config) {
-  return config;
-}, function (error) {
-  if (error.response.status === 401) {
-    _router__WEBPACK_IMPORTED_MODULE_1__["default"].push({
-      name: 'user.login'
-    });
-  }
-});
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (api);
 
 /***/ }),
