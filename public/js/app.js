@@ -22196,7 +22196,12 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       email: '',
-      password: ''
+      password: '',
+      loginResult: {
+        visible: false,
+        message: '',
+        colorClass: ''
+      }
     };
   },
   methods: {
@@ -22207,9 +22212,15 @@ __webpack_require__.r(__webpack_exports__);
         password: this.password
       }).then(function (res) {
         localStorage.setItem('access_token', res.data.access_token);
-        _this.$router.push({
-          name: 'pages.index'
-        });
+        _this.loginResult.message = 'You have successfully logged in';
+        _this.loginResult.colorClass = 'alert-success';
+        _this.loginResult.visible = true;
+      })["catch"](function (error) {
+        if (error.response.status === 401) {
+          _this.loginResult.message = 'Invalid authorization data';
+          _this.loginResult.colorClass = 'alert-danger';
+          _this.loginResult.visible = true;
+        }
       });
     }
   }
@@ -22239,11 +22250,21 @@ __webpack_require__.r(__webpack_exports__);
       family: '',
       email: '',
       password: '',
-      password_confirmation: ''
+      password_confirmation: '',
+      regResult: {
+        failed: {
+          messages: []
+        },
+        success: {
+          message: 'You have successfully registered',
+          visible: false
+        }
+      }
     };
   },
   methods: {
     store: function store() {
+      var _this = this;
       axios__WEBPACK_IMPORTED_MODULE_0___default().post('/api/users', {
         name: this.name,
         family: this.family,
@@ -22251,7 +22272,16 @@ __webpack_require__.r(__webpack_exports__);
         password: this.password,
         password_confirmation: this.password_confirmation
       }).then(function (res) {
+        _this.regResult.failed.messages = [];
+        _this.regResult.success.visible = true;
         console.log(res);
+      })["catch"](function (error) {
+        if (error.response.status === 422) {
+          _this.regResult.failed.messages = [];
+          for (var item in error.response.data.errors) {
+            _this.regResult.failed.messages.push(error.response.data.errors[item][0]);
+          }
+        }
       });
     }
   }
@@ -22352,7 +22382,11 @@ var _hoisted_1 = {
   "class": "w-25 m-auto"
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [$data.loginResult.visible ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
+    key: 0,
+    "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["alert mt-2", $data.loginResult.colorClass]),
+    role: "alert"
+  }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.loginResult.message), 3 /* TEXT, CLASS */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     "onUpdate:modelValue": _cache[0] || (_cache[0] = function ($event) {
       return $data.email = $event;
     }),
@@ -22393,8 +22427,19 @@ __webpack_require__.r(__webpack_exports__);
 var _hoisted_1 = {
   "class": "w-25 m-auto"
 };
+var _hoisted_2 = {
+  "class": "alert alert-danger mt-2",
+  role: "alert"
+};
+var _hoisted_3 = {
+  key: 0,
+  "class": "alert alert-success mt-2",
+  role: "alert"
+};
 function render(_ctx, _cache, $props, $setup, $data, $options) {
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_1, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.regResult.failed.messages, function (message) {
+    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_2, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(message), 1 /* TEXT */);
+  }), 256 /* UNKEYED_FRAGMENT */)), $data.regResult.success.visible ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_3, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.regResult.success.message), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     "onUpdate:modelValue": _cache[0] || (_cache[0] = function ($event) {
       return $data.name = $event;
     }),

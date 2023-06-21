@@ -1,5 +1,8 @@
 <template>
     <div class="w-25 m-auto">
+        <div class="alert mt-2" :class="loginResult.colorClass" role="alert" v-if="loginResult.visible">
+            {{ loginResult.message }}
+        </div>
         <input v-model="email" type="email" class="form-control mt-3 mb-3" placeholder="email">
         <input v-model="password" type="password" class="form-control mb-3" placeholder="password">
         <input @click.prevent="login" type="submit" class="btn btn-primary">
@@ -14,6 +17,11 @@ export default {
         return {
             email: '',
             password: '',
+            loginResult: {
+                visible: false,
+                message: '',
+                colorClass: ''
+            }
         }
     },
     methods: {
@@ -21,7 +29,16 @@ export default {
             axios.post('/api/auth/login', {email: this.email, password: this.password})
                 .then(res => {
                     localStorage.setItem('access_token', res.data.access_token);
-                    this.$router.push({ name: 'pages.index'})
+
+                    this.loginResult.message = 'You have successfully logged in';
+                    this.loginResult.colorClass = 'alert-success';
+                    this.loginResult.visible = true;
+                }).catch(error => {
+                    if (error.response.status === 401) {
+                        this.loginResult.message = 'Invalid authorization data';
+                        this.loginResult.colorClass = 'alert-danger';
+                        this.loginResult.visible = true;
+                    }
                 });
         }
     }
