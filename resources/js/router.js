@@ -5,8 +5,8 @@ import Registration from './components/User/Registration';
 
 const routes = [
     {
-        path: "/",
-        name: "pages.index",
+        path: '/',
+        name: 'pages.index',
         component: Index,
     },
     {
@@ -18,6 +18,11 @@ const routes = [
         path:'/users/registration',
         name: 'user.registration',
         component: Registration,
+    },
+    {
+        path: '/:pathMatch(.*)*',
+        name: '404',
+        component: Index
     }
 ];
 
@@ -25,5 +30,25 @@ const router = createRouter({
     history: createWebHistory(),
     routes: routes,
 });
+
+router.beforeEach((to, from, next) => {
+    const accessToken = localStorage.getItem('access_token');
+
+    if (!accessToken) {
+        if (to.name === 'user.login' || to.name === 'user.registration') {
+            return next()
+        } else {
+            return next({
+                name: 'pages.index'
+            })
+        }
+    }
+
+    if (to.name === 'user.login' && accessToken) {
+        return next({name: 'pages.index'})
+    }
+
+    next();
+})
 
 export default router;

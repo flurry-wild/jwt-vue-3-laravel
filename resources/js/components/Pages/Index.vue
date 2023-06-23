@@ -4,6 +4,7 @@
     </div>
 </template>
 <script>
+import AuthService from '../../AuthService';
 import API from '../../api';
 
 export default {
@@ -18,19 +19,15 @@ export default {
     },
     methods: {
         getSecretData() {
-            API.get('/api/auth/index').then(res => {
-                this.secretData = res.data;
-            }).catch(err => {
-                if (err.response.data.message === 'Token has expired') {
-                    API.post('api/auth/refresh').then(res => {
-                        localStorage.setItem('access_token', res.data.access_token);
+            const request = () => {
+                return new Promise((resolve, reject) => {
+                    resolve(API.get('/api/auth/index'));
+                });
+            }
 
-                        API.get('/api/auth/index').then(dataResponse => {
-                            this.secretData = dataResponse.data;
-                        })
-                    });
-                }
-            })
+            AuthService.auth(request).then(data => {
+                this.secretData = data;
+            });
         }
     }
 }
