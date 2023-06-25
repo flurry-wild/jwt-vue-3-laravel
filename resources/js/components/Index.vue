@@ -1,16 +1,15 @@
 <template>
-    <div class="menu">
+    <div class="menu" :data-updater="$store.state.updater">
         <router-link v-if="accessToken" :to="{ name: 'pages.index' }" class="p-2">Test page</router-link>
         <router-link v-if="!accessToken" :to="{ name: 'user.login' }" class="p-2">Login</router-link>
         <router-link v-if="!accessToken" :to="{ name: 'user.registration' }" class="p-2">Registration</router-link>
-        <a href="#" @click.prevent="logout">Logout</a>
+        <a v-if="accessToken" href="#" @click.prevent="logout">Logout</a>
     </div>
     <router-view></router-view>
 </template>
 
 <script>
 import API from '../api';
-import router from '../router';
 import AuthService from '../AuthService';
 
 export default {
@@ -21,14 +20,14 @@ export default {
         }
     },
     mounted() {
-        this.getAccessToken()
+        this.getAccessToken();
     },
     updated() {
-        this.getAccessToken()
+        this.getAccessToken();
     },
     methods: {
         getAccessToken() {
-            this.accessToken = localStorage.getItem('access_token')
+            this.accessToken = localStorage.getItem('access_token');
         },
         logout() {
             const request = () => {
@@ -39,7 +38,9 @@ export default {
 
             AuthService.auth(request).then(data => {
                 localStorage.removeItem('access_token');
-                router.push({ name: 'user.login'})
+                this.$store.state.updater += 1;
+
+                this.$router.push({ name: 'user.login'})
             });
         }
     }

@@ -21,7 +21,7 @@ export default {
                 visible: false,
                 message: '',
                 colorClass: ''
-            }
+            },
         }
     },
     methods: {
@@ -33,6 +33,12 @@ export default {
                     this.loginResult.message = 'You have successfully logged in';
                     this.loginResult.colorClass = 'alert-success';
                     this.loginResult.visible = true;
+
+                    setTimeout(() => {
+                        this.$store.state.updater += 1;
+
+                        this.$router.push({name: 'pages.index'});
+                    }, 3000);
                 }).catch(error => {
                     if (error.response.status === 401) {
                         this.loginResult.message = 'Invalid authorization data';
